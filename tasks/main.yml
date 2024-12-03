@@ -1,0 +1,83 @@
+---
+# tasks file for karen.docker-runner
+- name: Install Python pip
+  ansible.builtin.package:
+    name: python3-pip
+    state: present
+  tags: [dependencies]
+
+- name: Install dependencies
+  ansible.builtin.pip:
+    name:
+      - docker
+      - jsondiff
+      - pyyaml
+  tags: [dependencies]
+
+- name: Create Docker Volume
+  community.docker.docker_volume:
+    name: "{{ volume_name }}"
+  when: volume_enable
+  tags: [volume]
+
+- name: "Pull {{ image_name }}:{{ image_tag }}"
+  ansible.builtin.docker_image:
+    name: "{{ image_name }}"
+    tag: "{{ image_tag }}"
+    source: pull
+  tags: [pull]
+
+- name: "Create {{ container_name }} container"
+  ansible.builtin.docker_container:
+    name: "{{ container_name }}"
+    image: "{{ image_name }}:{{ image_tag }}"
+    env:
+      TZ: "{{ timezone }}"
+    detach: true
+    volumes: "{{ extra_volumes }}"
+    etc_hosts: "{{ etc_hosts }}"
+    working_dir: "{{ base_dir }}"
+    restart: true
+    restart_policy: "always"
+  tags: [container]
+
+- name: Check if GitLab Runner is registered
+  community.docker.docker_container_exec:
+    container: "{{ container_name }}"
+    command: gitlab-runner list
+  register: runner_list_output
+  ignore_errors: true
+
+- name: Unregister existing GitLab Runner if it exists
+  community.docker.docker_container_exec:
+    container: "{{ container_name }}"
+    command: >
+         gitlab-runner unregister --name {{ runner_name }}
+  ignore_errors: true
+
+- name: "Register {{ container_name }}"
+  community.docker.docker_container_exec:
+    container: "{{ container_name }}"
+    argv:
+      - /bin/bash
+      - "-c"
+      - |
+        gitlab-runner register \
+        --non-interactive \
+        --url=https://{{ domain }}/ \
+        --registration-token="{{ reg_token }}" \
+        --executor={{ executor }} \
+        --docker-image={{ docker_image }} \
+        --name="{{ runner_name }}" \
+        --request-concurrency={{ concurrency }} \
+        --tag-list="{{ runner_tags }}" \
+        {% for volume in extra_volumes %}
+        --docker-volumes="{{ volume }}" \
+        {% endfor %}
+        {% for hosts in extra_hosts %}
+        --docker-extra-hosts "{{ hosts }}" \
+        {% endfor %}
+        --docker-privileged \
+        --docker-disable-cache=false
+    chdir: /etc/gitlab-runner
+  tags: [register]

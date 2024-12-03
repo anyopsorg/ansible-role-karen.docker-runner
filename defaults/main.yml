@@ -1,0 +1,36 @@
+---
+# defaults file for karen.docker-runner
+reg_token: ""
+domain: "gitlab.foo.uz"
+ip_address: ""
+# Volume for runner
+volume_enable: false
+volume_name: runner-volume
+
+image_name: gitlab/gitlab-runner
+image_tag: latest
+container_name: runner-1
+runner_tags: "TEST"
+runner_name: "runner-1"
+
+extra_volumes: []
+# extra_volumes:
+#   - "/var/run/docker.sock:/var/run/docker.sock"
+#   - "/certs/client/"
+
+etc_hosts: [] 
+#### Example of extra host:
+# etc_hosts:
+#   gitlab.foo.uz: "192.168.10.11"
+#   harbor.foo.uz: "192.168.10.19" 
+extra_hosts: []
+# extra_hosts: 
+#   - "gitlab.foo.uz:192.168.10.11"
+#   - "harbor.foo.uz:192.168.10.19"
+
+base_dir: "/etc/gitlab-runner"
+
+timezone: "Asia/Tashkent"
+executor: docker
+docker_image: alpine:latest
+concurrency: 10
