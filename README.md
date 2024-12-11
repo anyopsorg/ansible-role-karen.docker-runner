@@ -1,7 +1,7 @@
 Role Name
 =========
 
-A brief description of the role goes here.
+This Ansible role sets up a GitLab Runner inside a Docker container. The role ensures that the runner is registered with the GitLab instance and supports the Docker executor. It handles:
 
 Requirements
 ------------

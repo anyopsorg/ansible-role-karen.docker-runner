@@ -70,6 +70,7 @@
         --docker-image={{ docker_image }} \
         --name="{{ runner_name }}" \
         --request-concurrency={{ concurrency }} \
+        --machine-max-growth-rate={{ concurrency }} \
         --tag-list="{{ runner_tags }}" \
         {% for volume in extra_volumes %}
         --docker-volumes="{{ volume }}" \
