@@ -82,3 +82,19 @@
         --docker-disable-cache=false
     chdir: /etc/gitlab-runner
   tags: [register]
+
+- name: Set concurrent in config.toml
+  community.docker.docker_container_exec:
+    container: "{{ container_name }}"
+    argv:
+      - /bin/bash
+      - "-c"
+      - |
+        sed -i 's/^concurrent = .*/concurrent = {{ concurrency }}/' /etc/gitlab-runner/config.toml
+  tags: [config]
+
+- name: Restart GitLab Runner container
+  ansible.builtin.docker_container:
+    name: "{{ container_name }}"
+    state: started
+  tags: [restart] 
