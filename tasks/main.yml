@@ -45,7 +45,7 @@
       TZ: "{{ timezone }}"
     detach: true
     volumes: "{{ extra_volumes }}"
-    etc_hosts: "{{ etc_hosts }}"
+    etc_hosts: "{{ etc_hosts if etc_hosts | length > 0 else omit }}"
     working_dir: "{{ base_dir }}"
     restart: true
     restart_policy: "always"
