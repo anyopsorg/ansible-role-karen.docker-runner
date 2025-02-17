@@ -12,6 +12,16 @@
       - docker
       - jsondiff
       - pyyaml
+  when: ansible_os_family == "RedHat"
+  tags: [dependencies]
+
+- name: Install dependencies
+  ansible.builtin.pip:
+    name:
+      - docker-py
+      - jsondiff
+      - pyyaml
+  when: ansible_os_family == "Debian"
   tags: [dependencies]
 
 - name: Create Docker Volume
