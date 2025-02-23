@@ -12,6 +12,7 @@ image_tag: latest
 container_name: runner-1
 runner_tags: "TEST"
 runner_name: "runner-1"
+envs: ""
 
 extra_volumes: []
 # extra_volumes:

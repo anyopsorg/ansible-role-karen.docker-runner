@@ -79,6 +79,7 @@
         --docker-extra-hosts "{{ hosts }}" \
         {% endfor %}
         --docker-privileged \
+        --env="{{ envs }}" \
         --docker-disable-cache=false
     chdir: /etc/gitlab-runner
   tags: [register]
