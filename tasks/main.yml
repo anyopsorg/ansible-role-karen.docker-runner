@@ -12,6 +12,16 @@
       - docker
       - jsondiff
       - pyyaml
+  when: ansible_os_family == "RedHat"
+  tags: [dependencies]
+
+- name: Install dependencies
+  ansible.builtin.pip:
+    name:
+      - docker-py
+      - jsondiff
+      - pyyaml
+  when: ansible_os_family == "Debian"
   tags: [dependencies]
 
 - name: Create Docker Volume
@@ -35,7 +45,7 @@
       TZ: "{{ timezone }}"
     detach: true
     volumes: "{{ extra_volumes }}"
-    etc_hosts: "{{ etc_hosts }}"
+    etc_hosts: "{{ etc_hosts if etc_hosts | length > 0 else omit }}"
     working_dir: "{{ base_dir }}"
     restart: true
     restart_policy: "always"
