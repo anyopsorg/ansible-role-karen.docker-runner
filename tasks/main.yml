@@ -12,6 +12,7 @@
       - docker
       - jsondiff
       - pyyaml
+    extra_args: --break-system-packages
   when: ansible_os_family == "RedHat"
   tags: [dependencies]
 
@@ -21,6 +22,7 @@
       - docker-py
       - jsondiff
       - pyyaml
+    extra_args: --break-system-packages
   when: ansible_os_family == "Debian"
   tags: [dependencies]
 
